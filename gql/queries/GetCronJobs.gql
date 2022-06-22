@@ -1,0 +1,18 @@
+query getCronJobs ($first: Int!, $page: Int, $orderBy: [OrderByClause!]) {
+  getCronJobs(
+    first: $first
+    page: $page
+    orderBy: $orderBy
+  ) {
+    paginatorInfo {
+      currentPage
+      hasMorePages,
+      total,
+      count
+    }
+    data {
+      id
+      name
+    }
+  }
+}

@@ -1,87 +1,145 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
+  <v-app>
+    <v-skeleton-loader
+      v-if="!cronJobs"
+      class="elevation-2"
+      boilerplate
+      :type="'table-thead, table-row-divider@'+tableOptions.itemsPerPage+', table-tfoot'"
+    />
+    <v-data-table
+      v-else
+      :headers="tableHeaders"
+      :items="cronJobs"
+      :options.sync="tableOptions"
+      :items-per-page="10"
+      class="elevation-1"
+      :server-items-length="totalCronJobs"
+      :loading="isLoading"
+      :footer-props="{
+        'items-per-page-options': [5,10,20,30]
+      }"
+      @click:row="showDetail"
+    ></v-data-table>
+    <v-dialog
+      v-model="detailDialog"
+      width="500"
+    >
       <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
+        <v-card-title class="text-h5">
+          CRON Job Detail
         </v-card-title>
+
+        <v-divider></v-divider>
         <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for
-            Vue.js. It was designed to empower developers to create amazing
-            applications.
-          </p>
-          <p>
-            For more information on Vuetify, check out the
-            <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation </a
-            >.
-          </p>
-          <p>
-            If you have questions, please join the official
-            <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord </a
-            >.
-          </p>
-          <p>
-            Find a bug? Report it on the github
-            <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board </a
-            >.
-          </p>
-          <p>
-            Thank you for developing with Vuetify and I look forward to bringing
-            more exciting features in the future.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br />
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
+          <p>ID: {{ cronJob.id }}</p>
+          <p>Name: {{ cronJob.name }}</p>
+          <p>Expression: {{ cronJob.expression }}</p>
+          <p>URL: {{ cronJob.url }}</p>
+          <p>Email: {{ cronJob.email_me }}</p>
+          <p>Log: {{ cronJob.log }}</p>
+          <p>Post: {{ cronJob.post }}</p>
+          <p>Status: {{ cronJob.status }}</p>
+          <p>Average executable time: {{ cronJob.executable_time }}</p>
         </v-card-text>
+
+        <v-divider></v-divider>
+
         <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="closeDetailDialog"
+          >
+            Close
+          </v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </v-dialog>
+  </v-app>
 </template>
 
 <script>
+
+import _ from 'lodash'
+import { GetCronJobs } from "~/gql/queries";
+
 export default {
-  name: 'IndexPage',
+  name: 'CronJobsList',
+  apollo: {
+    getCronJobs: {
+      query: GetCronJobs,
+      variables () {
+        return {
+          first: this.tableOptions.itemsPerPage,
+          page: this.tableOptions.page,
+          orderBy: this.sortingArray
+        }
+      }
+    }
+  },
+  data () {
+    return {
+      page: 1,
+      tableOptions: {
+        page: 1,
+        itemsPerPage: 10
+      },
+      rowsPerPageItems: [5,10,20,30],
+      tableHeaders: [
+        {
+          text: 'ID',
+          value: 'id'
+        },
+        {
+          text: 'Name',
+          value: 'name'
+        }
+      ],
+      detailDialog: false,
+      cronJob: {
+        id: 0,
+        name: '',
+        expression: '',
+        url: '',
+        email_me: '',
+        log: '',
+        post: '',
+        status: '',
+        executable_time: 0
+      }
+    }
+  },
+  computed: {
+    cronJobs () {
+      return this.getCronJobs?.data
+    },
+    totalCronJobs () {
+      return this.getCronJobs?.paginatorInfo.total
+    },
+    isLoading () {
+      return this.$apollo.queries.getCronJobs?.loading
+    },
+    sortingArray () {
+      const clonedTableOptions = _.cloneDeep(this.tableOptions)
+      return _.map(clonedTableOptions.sortBy, function (sort, index) {
+        return ({
+          column: sort,
+          order: clonedTableOptions.sortDesc[index] === true ? 'DESC' : 'ASC'
+        })
+      })
+    }
+  },
+  methods: {
+    showDetail () {
+      this.openDetailDialog()
+    },
+    openDetailDialog () {
+      this.detailDialog = true
+    },
+    closeDetailDialog () {
+      this.detailDialog = false
+    }
+  }
 }
 </script>
