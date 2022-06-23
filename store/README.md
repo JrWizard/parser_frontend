@@ -1,10 +1,8 @@
-# STORE
+## Instalace
 
-**This directory is not required, you can delete it if you don't want to use it.**
+- spustit `yarn install`
+- nastavit správný endpoint na backend v souboru **nuxt.config.js:67**
+- spustit `yarn dev`
 
-This directory contains your Vuex Store files.
-Vuex Store option is implemented in the Nuxt.js framework.
-
-Creating a file in this directory automatically activates the option in the framework.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/guide/vuex-store).
+##
+Detail Cron Jobu se zobrazí po kliknutí na řádek v tabulce
