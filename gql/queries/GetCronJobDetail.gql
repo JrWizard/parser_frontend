@@ -2,7 +2,7 @@ query getCronJobDetail ($id: ID!) {
   getCronJobDetail(
     id: $id
   ) {
-    id
+    cron_job_id
     name
     expression
     url
