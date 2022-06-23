@@ -32,8 +32,8 @@
         :server-items-length="totalCronJobs"
         :loading="isLoading"
         :footer-props="{
-        'items-per-page-options': [5,10,20,30]
-      }"
+          'items-per-page-options': [5,10,20,30]
+        }"
         @click:row="showDetail"
       ></v-data-table>
     </v-card>
@@ -89,7 +89,7 @@ export default {
     getCronJobs: {
       query: GetCronJobs,
       variables() {
-        return this.queryVariables
+        return this.queryVariables;
       }
     }
   },
@@ -100,7 +100,7 @@ export default {
         page: 1,
         itemsPerPage: 10
       },
-      tableSearch: '',
+      tableSearch: "",
       rowsPerPageItems: [5, 10, 20, 30],
       tableHeaders: [
         {
@@ -136,18 +136,18 @@ export default {
     isLoading() {
       return this.$apollo.queries.getCronJobs?.loading;
     },
-    queryVariables () {
+    queryVariables() {
       const variables = {
         first: this.tableOptions.itemsPerPage,
         page: this.tableOptions.page,
         orderBy: this.sortingArray
-      }
+      };
 
       if (this.tableSearch) {
-          variables.search = "%" + this.tableSearch + "%"
+        variables.search = "%" + this.tableSearch + "%";
       }
 
-      return variables
+      return variables;
     },
     sortingArray() {
       const clonedTableOptions = _.cloneDeep(this.tableOptions);
@@ -160,8 +160,8 @@ export default {
     }
   },
   methods: {
-    changeSearch (value) {
-      this.tableSearch = value
+    changeSearch(value) {
+      this.tableSearch = value;
     },
     showDetail(value) {
       this.loadDetailData(value.id).then((job) => {
