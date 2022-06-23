@@ -13,6 +13,7 @@ query getCronJobs ($first: Int!, $page: Int, $orderBy: [OrderByClause!], $search
     }
     data {
       id
+      cron_job_id
       name
     }
   }

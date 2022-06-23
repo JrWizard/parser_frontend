@@ -50,7 +50,7 @@
         <v-divider></v-divider>
 
         <v-card-text class="pb-0 pt-4">
-          <p class="justify-space-between d-flex"><span>ID:</span> <span>{{ cronJob.id }}</span></p>
+          <p class="justify-space-between d-flex"><span>ID:</span> <span>{{ cronJob.cron_job_id }}</span></p>
           <p class="justify-space-between d-flex"><span>Name:</span> <span>{{ cronJob.name }}</span></p>
           <p class="justify-space-between d-flex"><span>Expression:</span> <span>{{ cronJob.expression }}</span></p>
           <p class="justify-space-between d-flex"><span>URL:</span> <span>{{ cronJob.url }}</span></p>
@@ -58,8 +58,7 @@
           <p class="justify-space-between d-flex"><span>Log:</span> <span>{{ cronJob.log }}</span></p>
           <p class="justify-space-between d-flex"><span>Post:</span> <span>{{ cronJob.post }}</span></p>
           <p class="justify-space-between d-flex"><span>Status:</span> <span>{{ cronJob.status }}</span></p>
-          <p class="justify-space-between d-flex"><span>Average executable time:</span> <span>{{ cronJob.execution_time
-            }}</span></p>
+          <p class="justify-space-between d-flex"><span>Average executable time:</span> <span>{{ cronJob.execution_time }}s</span></p>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -106,7 +105,7 @@ export default {
       tableHeaders: [
         {
           text: "ID",
-          value: "id"
+          value: "cron_job_id"
         },
         {
           text: "Name",
@@ -115,7 +114,7 @@ export default {
       ],
       detailDialog: false,
       cronJob: {
-        id: 0,
+        cron_job_id: 0,
         name: "",
         expression: "",
         url: "",
