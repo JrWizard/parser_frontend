@@ -1,8 +1,9 @@
-query getCronJobs ($first: Int!, $page: Int, $orderBy: [OrderByClause!]) {
+query getCronJobs ($first: Int!, $page: Int, $orderBy: [OrderByClause!], $search: String) {
   getCronJobs(
     first: $first
     page: $page
     orderBy: $orderBy
+    search: $search
   ) {
     paginatorInfo {
       currentPage

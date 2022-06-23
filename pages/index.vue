@@ -1,25 +1,42 @@
 <template>
   <v-app>
-    <v-skeleton-loader
-      v-if="!cronJobs"
-      class="elevation-2"
-      boilerplate
-      :type="'table-thead, table-row-divider@'+tableOptions.itemsPerPage+', table-tfoot'"
-    />
-    <v-data-table
-      v-else
-      :headers="tableHeaders"
-      :items="cronJobs"
-      :options.sync="tableOptions"
-      :items-per-page="10"
-      class="elevation-1"
-      :server-items-length="totalCronJobs"
-      :loading="isLoading"
-      :footer-props="{
+    <v-card>
+      <v-card-title>
+        <v-row>
+          <v-col md="4" lg="8" align-self="center">
+            CRON Jobs
+          </v-col>
+          <v-col md="8" lg="4">
+            <v-text-field
+              v-debounce:300ms="changeSearch"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <v-skeleton-loader
+        v-if="!cronJobs"
+        class="elevation-2"
+        boilerplate
+        :type="'table-thead, table-row-divider@'+tableOptions.itemsPerPage+', table-tfoot'"
+      />
+      <v-data-table
+        v-else
+        :headers="tableHeaders"
+        :items="cronJobs"
+        :options.sync="tableOptions"
+        :items-per-page="10"
+        class="elevation-1"
+        :server-items-length="totalCronJobs"
+        :loading="isLoading"
+        :footer-props="{
         'items-per-page-options': [5,10,20,30]
       }"
-      @click:row="showDetail"
-    ></v-data-table>
+        @click:row="showDetail"
+      ></v-data-table>
+    </v-card>
     <v-dialog
       v-model="detailDialog"
       width="500"
@@ -30,16 +47,18 @@
         </v-card-title>
 
         <v-divider></v-divider>
-        <v-card-text>
-          <p>ID: {{ cronJob.id }}</p>
-          <p>Name: {{ cronJob.name }}</p>
-          <p>Expression: {{ cronJob.expression }}</p>
-          <p>URL: {{ cronJob.url }}</p>
-          <p>Email: {{ cronJob.email_me }}</p>
-          <p>Log: {{ cronJob.log }}</p>
-          <p>Post: {{ cronJob.post }}</p>
-          <p>Status: {{ cronJob.status }}</p>
-          <p>Average executable time: {{ cronJob.executable_time }}</p>
+
+        <v-card-text class="pb-0 pt-4">
+          <p class="justify-space-between d-flex"><span>ID:</span> <span>{{ cronJob.id }}</span></p>
+          <p class="justify-space-between d-flex"><span>Name:</span> <span>{{ cronJob.name }}</span></p>
+          <p class="justify-space-between d-flex"><span>Expression:</span> <span>{{ cronJob.expression }}</span></p>
+          <p class="justify-space-between d-flex"><span>URL:</span> <span>{{ cronJob.url }}</span></p>
+          <p class="justify-space-between d-flex"><span>Email:</span> <span>{{ cronJob.email_me }}</span></p>
+          <p class="justify-space-between d-flex"><span>Log:</span> <span>{{ cronJob.log }}</span></p>
+          <p class="justify-space-between d-flex"><span>Post:</span> <span>{{ cronJob.post }}</span></p>
+          <p class="justify-space-between d-flex"><span>Status:</span> <span>{{ cronJob.status }}</span></p>
+          <p class="justify-space-between d-flex"><span>Average executable time:</span> <span>{{ cronJob.execution_time
+            }}</span></p>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -61,85 +80,109 @@
 
 <script>
 
-import _ from 'lodash'
-import { GetCronJobs } from "~/gql/queries";
+import _ from "lodash";
+import { GetCronJobDetail, GetCronJobs } from "~/gql/queries";
 
 export default {
-  name: 'CronJobsList',
+  name: "CronJobsList",
   apollo: {
     getCronJobs: {
       query: GetCronJobs,
-      variables () {
-        return {
-          first: this.tableOptions.itemsPerPage,
-          page: this.tableOptions.page,
-          orderBy: this.sortingArray
-        }
+      variables() {
+        return this.queryVariables
       }
     }
   },
-  data () {
+  data() {
     return {
       page: 1,
       tableOptions: {
         page: 1,
         itemsPerPage: 10
       },
-      rowsPerPageItems: [5,10,20,30],
+      tableSearch: '',
+      rowsPerPageItems: [5, 10, 20, 30],
       tableHeaders: [
         {
-          text: 'ID',
-          value: 'id'
+          text: "ID",
+          value: "id"
         },
         {
-          text: 'Name',
-          value: 'name'
+          text: "Name",
+          value: "name"
         }
       ],
       detailDialog: false,
       cronJob: {
         id: 0,
-        name: '',
-        expression: '',
-        url: '',
-        email_me: '',
-        log: '',
-        post: '',
-        status: '',
-        executable_time: 0
+        name: "",
+        expression: "",
+        url: "",
+        email_me: "",
+        log: "",
+        post: "",
+        status: "",
+        execution_time: 0
       }
-    }
+    };
   },
   computed: {
-    cronJobs () {
-      return this.getCronJobs?.data
+    cronJobs() {
+      return this.getCronJobs?.data;
     },
-    totalCronJobs () {
-      return this.getCronJobs?.paginatorInfo.total
+    totalCronJobs() {
+      return this.getCronJobs?.paginatorInfo.total;
     },
-    isLoading () {
-      return this.$apollo.queries.getCronJobs?.loading
+    isLoading() {
+      return this.$apollo.queries.getCronJobs?.loading;
     },
-    sortingArray () {
-      const clonedTableOptions = _.cloneDeep(this.tableOptions)
-      return _.map(clonedTableOptions.sortBy, function (sort, index) {
+    queryVariables () {
+      const variables = {
+        first: this.tableOptions.itemsPerPage,
+        page: this.tableOptions.page,
+        orderBy: this.sortingArray
+      }
+
+      if (this.tableSearch) {
+          variables.search = "%" + this.tableSearch + "%"
+      }
+
+      return variables
+    },
+    sortingArray() {
+      const clonedTableOptions = _.cloneDeep(this.tableOptions);
+      return _.map(clonedTableOptions.sortBy, function(sort, index) {
         return ({
           column: sort,
-          order: clonedTableOptions.sortDesc[index] === true ? 'DESC' : 'ASC'
-        })
-      })
+          order: clonedTableOptions.sortDesc[index] === true ? "DESC" : "ASC"
+        });
+      });
     }
   },
   methods: {
-    showDetail () {
-      this.openDetailDialog()
+    changeSearch (value) {
+      this.tableSearch = value
     },
-    openDetailDialog () {
-      this.detailDialog = true
+    showDetail(value) {
+      this.loadDetailData(value.id).then((job) => {
+        this.cronJob = job.data?.getCronJobDetail;
+        this.openDetailDialog();
+      });
     },
-    closeDetailDialog () {
-      this.detailDialog = false
+    async loadDetailData(id) {
+      return await this.$apollo.query({
+        query: GetCronJobDetail,
+        variables: {
+          id
+        }
+      });
+    },
+    openDetailDialog() {
+      this.detailDialog = true;
+    },
+    closeDetailDialog() {
+      this.detailDialog = false;
     }
   }
-}
+};
 </script>
