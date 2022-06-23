@@ -2,7 +2,8 @@
   <v-app>
     <v-card>
       <v-card-title>
-        <v-row>
+        <v-row
+          v-if="cronJobs">
           <v-col md="4" lg="8" align-self="center">
             CRON Jobs
           </v-col>
@@ -20,7 +21,7 @@
         v-if="!cronJobs"
         class="elevation-2"
         boilerplate
-        :type="'table-thead, table-row-divider@'+tableOptions.itemsPerPage+', table-tfoot'"
+        :type="'table-heading, table-row-divider@'+tableOptions.itemsPerPage+', table-tfoot'"
       />
       <v-data-table
         v-else
@@ -32,8 +33,8 @@
         :server-items-length="totalCronJobs"
         :loading="isLoading"
         :footer-props="{
-        'items-per-page-options': [5,10,20,30]
-      }"
+          'items-per-page-options': [5,10,20,30]
+        }"
         @click:row="showDetail"
       ></v-data-table>
     </v-card>
