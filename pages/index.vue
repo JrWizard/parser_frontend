@@ -160,6 +160,16 @@ export default {
       });
     }
   },
+  watch: {
+    cronJobs: {
+      handler() {
+        if (Math.ceil(this.totalCronJobs / this.tableOptions.itemsPerPage) < this.tableOptions.page) {
+          this.tableOptions.page = 1
+        }
+      },
+      deep: true
+    }
+  },
   methods: {
     changeSearch (value) {
       this.tableSearch = value
