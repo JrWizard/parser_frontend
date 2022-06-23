@@ -1,0 +1,15 @@
+query getCronJobDetail ($id: ID!) {
+  getCronJobDetail(
+    id: $id
+  ) {
+    id
+    name
+    expression
+    url
+    email_me
+    log
+    post
+    status
+    execution_time
+  }
+}
